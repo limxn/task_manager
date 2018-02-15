@@ -10,6 +10,7 @@ namespace app\forms;
 
 
 use app\models\Project;
+use app\models\Task;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
@@ -24,10 +25,17 @@ class TaskForm extends Model
     public $estimated_time;
 
     private $project;
-    public function __construct(Project $project,array $config = [])
+    public function __construct(Project $project,Task $task = null,array $config = [])
     {
         $this->project = $project;
         $this->project_id = $project->id;
+        if($task){
+            $this->title = $task->title;
+            $this->body = $task->body;
+            $this->estimated_time = $task->estimated_time;
+            $this->image = $task->image_path;
+
+        }
         parent::__construct($config);
     }
 

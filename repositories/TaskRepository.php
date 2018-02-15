@@ -19,4 +19,9 @@ class TaskRepository
             throw new \Exception('Ошибка сохранения задачи');
         }
     }
+
+    public function findById($id)
+    {
+        return Task::findOne($id);
+    }
 }

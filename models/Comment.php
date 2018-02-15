@@ -65,4 +65,9 @@ class Comment extends \yii\db\ActiveRecord
         $comment->body = $body;
         return $comment;
     }
+
+    public function addImage($imagePath)
+    {
+        $this->image_path = $imagePath;
+    }
 }

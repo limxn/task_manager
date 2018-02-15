@@ -145,4 +145,9 @@ class Task extends \yii\db\ActiveRecord
         $this->image_path = $imagePath;
     }
 
+    public function changeStatus($status_id)
+    {
+        $this->status_id = $status_id;
+    }
+
 }

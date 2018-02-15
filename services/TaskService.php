@@ -11,7 +11,9 @@ namespace app\services;
 
 use app\dispatchers\EventDispatcher;
 use app\events\NewTaskEvent;
+use app\events\TaskStatusChangeEvent;
 use app\forms\CommentForm;
+use app\forms\StatusForm;
 use app\forms\TaskForm;
 use app\models\Comment;
 use app\models\Task;
@@ -75,6 +77,22 @@ class TaskService
     {
         $comment = Comment::create($form->body);
         $task->addComment($comment);
+        if($form->image){
+            $comment->addImage($this->imageManager->save($form->image));
+        }
         $this->taskRepository->save($task);
+    }
+
+    public function changeStatus(StatusForm $statusForm, $userId)
+    {
+        $task = $this->taskRepository->findById($statusForm->task_id);
+        if(empty($task)){
+            throw new \Exception('Ошибка задачи не существует');
+        }
+        $task->changeStatus($statusForm->status_id);
+
+        $oldStatusId = $task->status_id;
+        $this->taskRepository->save($task);
+        $this->dispatcher->dispatch(new TaskStatusChangeEvent($task->id,$statusForm->status_id,$oldStatusId,$userId));
     }
 }

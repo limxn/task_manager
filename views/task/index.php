@@ -15,10 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Создать задачу', ['create','project_id' => $project->id], ['class' => 'btn btn-success']) ?>
-    </p>
+    <?php if(\Yii::$app->user->can('projectPanel',['project' => $project])):?>
+        <p>
+            <?= Html::a('Создать задачу', ['create','project_id' => $project->id], ['class' => 'btn btn-success']) ?>
+        </p>
+    <?php endif;?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

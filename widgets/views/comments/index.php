@@ -3,12 +3,18 @@
     <?php use yii\bootstrap\Html;
     use yii\widgets\ActiveForm;
 
+    /** @var \app\models\Comment $item */
     foreach ($items as $item): ?>
         <div class="panel panel-default">
             <div class="panel-body">
                 <p class="comment-content">
                     <?= Yii::$app->formatter->asNtext($item->body) ?>
                 </p>
+                <?php if($item->image_path):?>
+                <div>
+                    <?= Html::img($item->image_path);?>
+                </div>
+                <?php endif;?>
             </div>
         </div>
     <?php endforeach; ?>

@@ -27,11 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [
-                'label' => 'ID',
-                'attribute' => 'id',
+                'label' => 'Задачи',
                 'format' => 'html',
                 'value' => function(\app\models\Project $project){
-                    return sprintf('<a href="%s">%d</a>',Url::to(['task/index','project_id' => $project->id]),$project->id);
+                    return sprintf('<a href="%s">%s</a>',Url::to(['task/index','project_id' => $project->id]),'Список задач');
                 }
             ],
             'name',

@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\forms\CommentForm;
+use app\forms\StatusForm;
 use app\forms\TaskForm;
 use app\models\Project;
 use app\models\Task;
@@ -87,9 +88,14 @@ class TaskController extends Controller
     {
         /** @var Project $project */
         $project = $this->findProject($project_id);
+
+        /** @var Task $model */
+        $model = $this->findModel($task_id);
+        $statusForm = new StatusForm($model);
         return $this->render('view', [
-            'model' => $this->findModel($task_id),
-            'project' => $project
+            'model' => $model,
+            'project' => $project,
+            'statusForm' => $statusForm
         ]);
     }
 
@@ -128,16 +134,19 @@ class TaskController extends Controller
     {
         /** @var Task $model */
         $model = $this->findModel($task_id);
+
         /** @var Project $project */
         $project = $this->findProject($project_id);
+        $form = new TaskForm($project,$model);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
-            'model' => $model,
-            'project' => $project
+            'model' => $form,
+            'project' => $project,
+            'task' => $model,
         ]);
     }
 
@@ -175,6 +184,25 @@ class TaskController extends Controller
             'model' => $model,
             'task' => $task
         ]);
+    }
+
+    public function actionStatus($project_id,$task_id)
+    {
+        /** @var Task $task */
+        $task = $this->findModel($task_id);
+        $statusForm = new StatusForm($task,\Yii::$app->user);
+        if($statusForm->load(\Yii::$app->request->post()) && $statusForm->validate()){
+            try{
+                $this->taskService->changeStatus($statusForm,\Yii::$app->user->id);
+                \Yii::$app->session->setFlash('success', 'Статус изменен успешно сохранен');
+            } catch (\Exception $ex){
+                \Yii::$app->session->setFlash('error', $ex->getMessage());
+            }
+        }
+        if($statusForm->hasErrors()){
+            \Yii::$app->session->setFlash('error', $statusForm->getFirstErrors());
+        }
+        return $this->redirect(['view', 'project_id' => $task->project->id, 'task_id' => $task->id]);
     }
 
     /**
